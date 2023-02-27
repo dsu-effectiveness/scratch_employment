@@ -1,0 +1,22 @@
+---
+title: "jobseq_details"
+author: "Joy Baule"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(utHelpR)
+```
+
+Files pulled from JobsEQ are in the data folder.
+
+CIP to Occuapation: CIP codes that are tied to occupation names for Washington County, Utah, and the US.
+
+Awards: This is based on the number of awards from Utah Tech (reported as DSU in the JobsEQ system). The second tab of this spreadsheet is where I manually added SOC codes that match our CIP codes. 
+
