@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(utHelpR)
 library(janitor)
+library(readr)
 ```
 
 Files pulled from JobsEQ are in the data folder.
@@ -22,12 +23,16 @@ CIP to Occuapation: CIP codes that are tied to occupation names for Washington C
 Awards: This is based on the number of awards from Utah Tech (reported as DSU in the JobsEQ system). The second tab of this spreadsheet is where I manually added SOC codes that match our CIP codes. 
 
 ```{r}
-awards <- load_data_from_xlsx('Awards.xlsx') %>% 
-  row_to_names(1)
+awards <- load_data_from_xlsx('Awards.xlsx') %>%
+  row_to_names(1) %>% 
+   clean_names()
+
+#awards_clean <- awards[c(1:89), ] 
+awards_clean <- rename_with(awards[c(1:88), ],  ~gsub("x4", "four_", .x))
 ```
 
 ```{r}
-occupation_cips <- load_data_from_xlsx('CIP to Occupation.xlsx') %>% 
+occupation_cips <- load_data_from_xlsx('CIP to Occupation.xlsx') %>%
   row_to_names(2) %>% 
   clean_names()
 ```
@@ -40,11 +45,23 @@ occupation_cips_2 <- rename_with(occupation_cips_1, ~gsub("_2_wa", "_utah", .x))
 
 occupation_cips_3 <- rename_with(occupation_cips_2, ~gsub("_3_wa", "_us", .x))
 
-occupation_cips_clean <- rename_with(occupation_cips_3[1:77, ],  ~gsub("x5_", "five_", .x))
+occupation_cips_clean <- rename_with(occupation_cips_3[1:77, ],  ~gsub("x5_", "five_", .x)) %>% 
+  rename(occupation = occupation_wa) %>% 
+  rename(soc = soc_wa)
 
+#View(occupation_cips_clean)
 ```
 
 ```{r}
-View(occupation_cips_clean)
+occupation_cips_clean_df <- occupation_cips_clean %>% 
+  mutate(cip_code = str_sub(occupation, 5, 11)) 
+```
+
+```{r}
+both <- awards_clean %>% 
+  left_join(occupation_cips_clean_df, by = c("cip_code" = "cip_code")) %>% 
+    mutate(across(c(8:32), ~as.numeric(.x)))
+    #mutate_if(is.numeric, ~replace_na(., 0))
+  
 ```
 
