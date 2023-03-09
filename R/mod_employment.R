@@ -5,7 +5,7 @@ mod_employment_ui <- function(id, input_df){
   
   
   #fluidPage(
-  #titlePanel("scratch holds app"),
+  #titlePanel(title_name),
   fluidRow(
     column(4,
            selectInput(ns("title"),
@@ -28,8 +28,7 @@ mod_employment_server <- function(id, input_df, x) {
           transpose()
         
         data <- data.frame(unlist(data1))
-
-      })
-    })    
+      }, options = list(paging = FALSE))
+    })
   })
 }
