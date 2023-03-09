@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(utHelpR)
 library(janitor)
-library(readr)
+library(rlang)
 ```
 
 Files pulled from JobsEQ are in the data folder.
@@ -41,7 +41,7 @@ occupation_cips <- load_data_from_xlsx('CIP to Occupation.xlsx') %>%
 
 occupation_cips_1 <- rename_with(occupation_cips, ~paste(.x, "wa", sep = "_"))
 
-occupation_cips_2 <- rename_with(occupation_cips_1, ~gsub("_2_wa", "_utah", .x))
+occupation_cips_2 <- rename_with(occupation_cips_1, ~gsub("_2_wa", "_ut", .x))
 
 occupation_cips_3 <- rename_with(occupation_cips_2, ~gsub("_3_wa", "_us", .x))
 
@@ -60,8 +60,51 @@ occupation_cips_clean_df <- occupation_cips_clean %>%
 ```{r}
 both <- awards_clean %>% 
   left_join(occupation_cips_clean_df, by = c("cip_code" = "cip_code")) %>% 
-    mutate(across(c(8:32), ~as.numeric(.x)))
+  mutate(across(c(8:32), ~as.numeric(.x))) %>% 
+  select(!occupation)
     #mutate_if(is.numeric, ~replace_na(., 0))
   
+```
+
+```{r}
+just_wa_ <- both %>% 
+  select(1:7, ends_with("_wa"))
+```
+
+```{r}
+just_ut <- both %>% 
+  select(1:7, ends_with("_ut"))
+```
+
+```{r}
+just_us <- both %>% 
+  select(1:7, ends_with("_us"))
+```
+
+```{r}
+select_group_function <- function(input_df, x, y) {
+  x <- rlang::enquo(x) 
+  y <- rlang::enquo(y)  
+  
+output_df <- input_df %>% 
+  select(1:7, ends_with(!!x)) %>% 
+  filter((!!y) > 0)
+
+return(output_df)
+}
+```
+
+```{r}
+just_ut_df <- select_group_function(both, "_ut", four_yr_awards) %>%
+  filter(title == "Psychology, General") %>% 
+  transpose()
+  
+just_test <- data.frame(unlist(just_ut_df))
+
+```
+
+
+```{r}
+save(both, file = here::here("sensitive", "both.RData"))
 ```
 
