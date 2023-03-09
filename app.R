@@ -9,7 +9,7 @@ source(here::here("R", "mod_employment.R"))
 
 
 ui <- fluidPage(theme = shinytheme("yeti"),
-                titlePanel("scratch holds app"),
+                titlePanel("scratch employment app"),
                 tabsetPanel(
                     tabPanel("Washington County", mod_employment_ui("wa", both)), 
                     tabPanel("Utah", mod_employment_ui("ut", both)),
