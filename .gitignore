@@ -1,4 +1,13 @@
+^sensitive/$
+.Rproj.user
+.DS_Store
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+sensitive/
+data/
+*html
+*txt
+.Rdata
+.httr-oauth
